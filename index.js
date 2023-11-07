@@ -23,6 +23,7 @@ const ordersRouter = require('./routes/Order');
 const { User } = require('./models/User');
 const { isAuth, sanitizeUser, cookieExtractor } = require('./services/common');
 const path = require('path');
+const { Order } = require('./models/Order');
 
 
 
