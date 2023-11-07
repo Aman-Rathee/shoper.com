@@ -30,7 +30,7 @@ const path = require('path');
 // TODO: we will capture actual order after deploying out server live on public URL
 
 const endpointSecret = process.env.ENDPOINT_SECRET;
-server.post('/webhook', express.raw({ type: 'application/json' }), (request, response) => {
+server.post('/webhook', express.raw({ type: 'application/json' }), async (request, response) => {
     const sig = request.headers['stripe-signature'];
 
     let event;
@@ -47,6 +47,9 @@ server.post('/webhook', express.raw({ type: 'application/json' }), (request, res
         case 'payment_intent.succeeded':
             const paymentIntentSucceeded = event.data.object;
             console.log({ paymentIntentSucceeded })
+            const order = await Order.findById(paymentIntentSucceeded.metadata.orderId)
+            await order.save()
+            
             // Then define and call a function to handle the event payment_intent.succeeded
             break;
         // ... handle other event types
