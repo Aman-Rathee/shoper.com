@@ -28,14 +28,11 @@ const { Order } = require('./models/Order');
 
 
 // Webhook
-// TODO: we will capture actual order after deploying out server live on public URL
-
 const endpointSecret = process.env.ENDPOINT_SECRET;
 server.post('/webhook', express.raw({ type: 'application/json' }), async (request, response) => {
     const sig = request.headers['stripe-signature'];
 
     let event;
-
     try {
         event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
     } catch (err) {
@@ -47,11 +44,11 @@ server.post('/webhook', express.raw({ type: 'application/json' }), async (reques
     switch (event.type) {
         case 'payment_intent.succeeded':
             const paymentIntentSucceeded = await event.data.object;
-            console.log({ paymentIntentSucceeded })
+            // console.log({ paymentIntentSucceeded })
             const order = await Order.findById(paymentIntentSucceeded.metadata.orderId)
             order.paymentStatus = 'received'
             await order.save()
-            
+
             // Then define and call a function to handle the event payment_intent.succeeded
             break;
         // ... handle other event types
@@ -64,12 +61,10 @@ server.post('/webhook', express.raw({ type: 'application/json' }), async (reques
 });
 
 
-
 // JWT options
-
 const opts = {}
 opts.jwtFromRequest = cookieExtractor;
-opts.secretOrKey = process.env.JWT_SECRET_KEY; // TODO : should not be in code
+opts.secretOrKey = process.env.JWT_SECRET_KEY;
 
 
 // middlewares
@@ -92,6 +87,8 @@ server.use('/user', isAuth(), usersRouter.router)
 server.use('/auth', authRouter.router)
 server.use('/cart', isAuth(), cartRouter.router)
 server.use('/orders', isAuth(), ordersRouter.router)
+
+
 // this line we add to make react router work in case of other routes doesn't match
 server.get('*', (req, res) => res.sendFile(path.resolve('build', 'index.html')));
 
@@ -102,15 +99,13 @@ passport.use('local', new LocalStrategy({
 }, async function (email, password, next) {
     try {
         const user = await User.findOne({ email });
-        console.log(email, password, user);
+        // console.log(email, password, user);
         if (!user) {
             return next(null, false, { message: 'invalid credentials' })
         }
         crypto.pbkdf2(password, user.salt, 310000, 32, 'sha256', async function (err, hashedPassword) {
             if (!crypto.timingSafeEqual(user.password, hashedPassword)) {
                 return next(null, false, { message: 'invalid credentials' })
-                // TODO : we will make addresses independent of login
-                // res.status(200).json({ id: user.id, role: user.role })
             }
             const token = jwt.sign(sanitizeUser(user), process.env.JWT_SECRET_KEY);
             next(null, { id: user.id, role: user.role, token }); // this lines sends to serializer
@@ -122,7 +117,7 @@ passport.use('local', new LocalStrategy({
 ));
 
 passport.use('jwt', new JwtStrategy(opts, async function (jwt_payload, done) {
-    console.log(jwt_payload);
+    // console.log(jwt_payload);
     try {
         const user = await User.findById(jwt_payload.id)
         if (user) {
@@ -131,14 +126,14 @@ passport.use('jwt', new JwtStrategy(opts, async function (jwt_payload, done) {
             return done(null, false);
         }
     } catch (error) {
-        return done(err, false);
+        return done(error, false);
 
     }
 }));
 
 // this creates session variable req.user on being called from callbacks
 passport.serializeUser(function (user, cb) {
-    console.log('serialize', user);
+    // console.log('serialize', user);
     process.nextTick(function () {
         return cb(null, { id: user.id, role: user.role });
     });
@@ -146,7 +141,7 @@ passport.serializeUser(function (user, cb) {
 
 // this changes session variable req.user when called from authorized request
 passport.deserializeUser(function (user, cb) {
-    console.log('deserialize', user);
+    // console.log('deserialize', user);
     process.nextTick(function () {
         return cb(null, user);
     });
@@ -175,7 +170,6 @@ server.post("/create-payment-intent", async (req, res) => {
             // so we can conclude that payment was successful, even if client closes window after pay
         }
     });
-
     res.send({
         clientSecret: paymentIntent.client_secret,
     });
@@ -193,10 +187,6 @@ const main = async () => {
     console.log('database connected');
 }
 main().catch(err => console.log(err))
-
-// server.get('/', (req, res) => {
-//     res.json({ status: 'success' })
-// })
 
 server.listen(process.env.PORT, () => {
     console.log(`Node server listening on port no. ${process.env.PORT}`);

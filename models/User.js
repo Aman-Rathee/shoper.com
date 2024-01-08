@@ -7,11 +7,10 @@ const userSchema = new Schema({
     password: { type: Buffer, required: true },
     role: { type: String, required: true, default: 'user' },
     addresses: { type: [Schema.Types.Mixed] },
-    // TODO : we can make a separate Schema for addresses
     name: { type: String },
-    // orders: { type: [Schema.Types.Mixed] },
     salt: Buffer,
-})
+    resetPasswordToken: { type: String, default: '', },
+}, { timestamps: true })
 
 const virtual = userSchema.virtual('id');
 virtual.get(() => {
