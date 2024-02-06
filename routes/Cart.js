@@ -4,7 +4,7 @@ const { addToCart, fetchCartByUser, deleteFromCart, updateCart } = require('../c
 
 const router = express.Router();
 
-//   /users is already added in base path
+//   /cart is already added in base path
 router.post('/', addToCart)
     .get('/', fetchCartByUser)
     .patch('/:id', updateCart)

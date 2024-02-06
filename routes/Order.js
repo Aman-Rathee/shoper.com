@@ -4,7 +4,7 @@ const { createOrder, fetchOrderByUser, updateOrder, deleteOrder, fetchAllOrders 
 
 const router = express.Router();
 
-//   /users is already added in base path
+//   /orders is already added in base path
 router.post('/', createOrder)
     .get('/', fetchAllOrders)
     .get('/my', fetchOrderByUser)

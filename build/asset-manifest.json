@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/static/css/main.a3a52499.css",
-    "main.js": "/static/js/main.e0a3612c.js",
+    "main.js": "/static/js/main.f5a0351d.js",
     "static/js/787.4fb5f8c8.chunk.js": "/static/js/787.4fb5f8c8.chunk.js",
     "static/media/shoper.com.png": "/static/media/shoper.com.e48033caef28e1569d6d.png",
     "index.html": "/index.html",
     "main.a3a52499.css.map": "/static/css/main.a3a52499.css.map",
-    "main.e0a3612c.js.map": "/static/js/main.e0a3612c.js.map",
+    "main.f5a0351d.js.map": "/static/js/main.f5a0351d.js.map",
     "787.4fb5f8c8.chunk.js.map": "/static/js/787.4fb5f8c8.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.a3a52499.css",
-    "static/js/main.e0a3612c.js"
+    "static/js/main.f5a0351d.js"
   ]
 }
